@@ -16,7 +16,7 @@ use App\Http\Controllers\auth\LoginController;
 
 Route::get('/home', function () {
     return view('welcome');
-})->middleware('App\Http\Middleware\verifIsConnect');
+})->name("home")->middleware('App\Http\Middleware\verifIsConnect');
 Route::get("login",[LoginController::class, 'ShowLoginForm'])->name("formLogin");
 Route::post('login', [LoginController::class, 'login'])->name('login');
 Route::post('connexion', [LoginController::class, 'connexion'])->name('connexion');

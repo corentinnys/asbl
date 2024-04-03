@@ -23,7 +23,14 @@ class LoginController extends Controller
     }
     public function ShowLoginForm()
     {
-        return view('auth.login');
+        if (Auth::check())
+        {
+            return redirect()->route("home");
+        }else
+        {
+            return view('auth.login');
+        }
+
     }
     public function login(Request $request)
     {
@@ -32,8 +39,7 @@ class LoginController extends Controller
         $user =$this->_usersController->getByMail($mail);
         if (is_null($user))
         {
-            $errorMail ="mauvais mail";
-            return view("auth.login",compact("errorMail"));
+            return redirect()->route("login")->with('error', 'email incorrect');
         }
         if (Hash::needsRehash($user->password)) {
             $user->password = Hash::make($password);
@@ -56,8 +62,8 @@ class LoginController extends Controller
 
         } else {
 
-            return \redirect()->route("login");
-           //return view("auth.login",compact("errorPassword"));
+            return redirect()->route("login")->with('error', 'mot de passe incorrect');
+
         }
 
     }
