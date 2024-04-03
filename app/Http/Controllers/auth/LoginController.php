@@ -8,6 +8,7 @@ use App\Http\Middleware\Authenticate;
 use App\Mail\Token;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
 
@@ -27,19 +28,25 @@ class LoginController extends Controller
     {
         $mail = $request->get('mail');
         $password = $request->get('password');
-        $user =$this->_usersController->getByMailAndPassword($mail,$password);
-        $request->session()->put('mail', $mail);
+        $user =$this->_usersController->getByMail($mail);
 
-        if (!is_null($user))
-        {
-            $token =  $this->getToken();
-            $this->_usersController->setTokenIntoDb($user->id,$token);
-            Mail::to('administrateur@chezmoi.com')
-                ->send(new Token($token));
 
-            return view("auth.token");
-        }
+            $request->session()->put('mail', $mail);
+
+            if (!is_null($user))
+            {
+                $token =  $this->getToken();
+                $this->_usersController->setTokenIntoDb($user->id,$token);
+                Mail::to('administrateur@chezmoi.com')
+                    ->send(new Token($token));
+
+                return view("auth.token");
+            }
+
+
+
     }
+
     public function getToken()
     {
         $token = [];

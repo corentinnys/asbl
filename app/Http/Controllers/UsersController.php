@@ -30,4 +30,9 @@ class UsersController extends Controller
         return User::where('email',$mail)
             ->where('two_factor_secret',$token)->first();
     }
+
+    public function getByMail($mail)
+    {
+        return User::where('email',$mail)->first();
+    }
 }

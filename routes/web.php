@@ -19,4 +19,6 @@ Route::get('/login', function () {
 });
 Route::post('login', [LoginController::class, 'login'])->name('login');
 Route::post('connexion', [LoginController::class, 'connexion'])->name('connexion');
+Route::get('admin/create/user', [App\Http\Controllers\Admin\UserController::class, 'createForm'])->name('createForm');
+Route::post('admin/create/user', [App\Http\Controllers\Admin\UserController::class, 'create'])->name('createUser');
 
