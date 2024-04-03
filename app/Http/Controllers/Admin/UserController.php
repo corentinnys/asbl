@@ -19,7 +19,7 @@ class UserController extends Controller
         DB::table('users')->insert([
             "name"=>$request->input('name'),
             "email"=>$request->input('mail'),
-            "password"=>Hash::make($request->input("password"))
+            "password"=>Hash::needsRehash($request->input("password"))
         ]);
     }
 }

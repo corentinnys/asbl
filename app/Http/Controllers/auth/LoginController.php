@@ -30,7 +30,12 @@ class LoginController extends Controller
         $password = $request->get('password');
         $user =$this->_usersController->getByMail($mail);
 
+        if (Hash::needsRehash($user->password)) {
+            $user->password = Hash::make($password);
+            $user->save();
+        }
 
+        if (Hash::check($password, $user->password)) {
             $request->session()->put('mail', $mail);
 
             if (!is_null($user))
@@ -43,6 +48,10 @@ class LoginController extends Controller
                 return view("auth.token");
             }
 
+
+        } else {
+            dd('pas check');
+        }
 
 
     }
