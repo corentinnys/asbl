@@ -5,7 +5,7 @@
 </head>
 <body>
 <h2>Votre jeton de securite</h2>
- {{ $token}}
+<strong>{{ $token}}</strong>
 
 </body>
 </html>

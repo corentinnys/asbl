@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\UsersController;
 use App\Http\Middleware\Authenticate;
 use App\Mail\Token;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -29,13 +30,17 @@ class LoginController extends Controller
         $mail = $request->get('mail');
         $password = $request->get('password');
         $user =$this->_usersController->getByMail($mail);
-
+        if (is_null($user))
+        {
+            $errorMail ="mauvais mail";
+            return view("auth.login",compact("errorMail"));
+        }
         if (Hash::needsRehash($user->password)) {
             $user->password = Hash::make($password);
             $user->save();
         }
 
-        if (Hash::check($password, $user->password)) {
+        else if (Hash::check($password, $user->password)) {
             $request->session()->put('mail', $mail);
 
             if (!is_null($user))
@@ -50,16 +55,17 @@ class LoginController extends Controller
 
 
         } else {
-            dd('pas check');
-        }
 
+            return \redirect()->route("login");
+           //return view("auth.login",compact("errorPassword"));
+        }
 
     }
 
     public function getToken()
     {
         $token = [];
-        for ($i = 0; $i <5 ; $i++) {
+        for ($i = 0; $i <7 ; $i++) {
             array_push($token,random_int(1,9));
         }
         $array = implode("", $token);
@@ -71,10 +77,24 @@ class LoginController extends Controller
         $mailFromSession = $request->session()->get('mail');
 
         $user = $this->_usersController->getByMailAndToken($mailFromSession,$token);
-        if(!is_null($user))
+        if (!is_null($user) && Carbon::now()->lessThanOrEqualTo($user->end_twoo_factor_code))
         {
             Auth::login($user);
-            dd(Auth::check());
+           return view("welcome");
+        }else if (is_null($user)){
+            $error = "numero invalide";
+            return view("auth.token",compact("error"));
+        }else{
+            $error = "code expiré";
+            return view("auth.token",compact("error"));
         }
     }
+    public function deconnexion()
+    {
+
+        Auth::logout();
+        return \redirect()->route("login");
+    }
+
+
 }

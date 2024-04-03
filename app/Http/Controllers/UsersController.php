@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -20,7 +21,8 @@ class UsersController extends Controller
        DB::table("users")
            ->where("id",$userID)
            ->update([
-                "two_factor_secret"=>$token
+                "two_factor_secret"=>$token,
+                "end_twoo_factor_code"=>Carbon::now()->addMinute(2)
            ]);
     }
 
