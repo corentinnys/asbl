@@ -5,9 +5,12 @@ namespace App\Http\Controllers\auth;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\UsersController;
 use App\Http\Middleware\Authenticate;
+use App\Mail\Token;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
+
 
 class LoginController extends Controller
 {
@@ -31,7 +34,8 @@ class LoginController extends Controller
         {
             $token =  $this->getToken();
             $this->_usersController->setTokenIntoDb($user->id,$token);
-
+            Mail::to('administrateur@chezmoi.com')
+                ->send(new Token($token));
 
             return view("auth.token");
         }
