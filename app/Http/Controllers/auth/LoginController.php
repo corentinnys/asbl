@@ -5,6 +5,7 @@ namespace App\Http\Controllers\auth;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\UsersController;
 use App\Http\Middleware\Authenticate;
+use App\Http\Requests\LoginRequest;
 use App\Mail\Token;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Validator;
 
 
 class LoginController extends Controller
@@ -34,6 +36,16 @@ class LoginController extends Controller
     }
     public function login(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'mail' => 'bail|required|email',
+            'password' => 'bail|required'
+        ],[
+            'required' => 'Le champ :attribute est requis.']);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
         $mail = $request->get('mail');
         $password = $request->get('password');
         $user =$this->_usersController->getByMail($mail);
