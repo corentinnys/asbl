@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Testing\Fluent\Concerns\Has;
 
@@ -33,7 +34,15 @@ class UserController extends Controller
     }
     private function createPassword(int $numberCaractere)
     {
-        return Str::random($numberCaractere);
+        {
+            $characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+{}|[];\',./?><';
+            $token = '';
+            $length = strlen($characters);
+            for ($i = 0; $i < $numberCaractere; $i++) {
+                $token .= $characters[random_int(0, $length - 1)];
+            }
+            return $token;
+        }
     }
 
     public function passwordForm()
@@ -46,6 +55,22 @@ class UserController extends Controller
         $old = $request->input('passwordOld');
         $mail = $request->input('mail');
         $new = $request->input('passwordNew');
+
+
+
+        $validator = Validator::make($request->all(), [
+            'mail' => 'bail|required|email',
+            'passwordOld' => 'bail|required',
+            'passwordNew' => 'bail|required'
+        ],[
+            'required' => 'Le champ :attribute est requis.']);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+
+
         $user =User::where("email",$mail)->first();
         if (Hash::needsRehash($user->password)) {
             $user->password = Hash::make($user->password);

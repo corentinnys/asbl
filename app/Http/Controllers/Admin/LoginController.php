@@ -72,12 +72,13 @@ class LoginController extends Controller
     }
     public function getToken()
     {
-        $token = [];
-        for ($i = 0; $i <7 ; $i++) {
-            array_push($token,random_int(1,9));
+        $characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+{}|[];\',./?><';
+        $token = '';
+        $length = strlen($characters);
+        for ($i = 0; $i < 7; $i++) {
+            $token .= $characters[random_int(0, $length - 1)];
         }
-        $array = implode("", $token);
-        return $array;
+        return $token;
     }
     public function connexion(Request $request)
     {
