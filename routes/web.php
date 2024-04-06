@@ -19,6 +19,7 @@ Route::get('/home', function () {
 })->name("home")->middleware('App\Http\Middleware\verifIsConnect');
 Route::get("login",[LoginController::class, 'ShowLoginForm'])->name("formLogin");
 Route::post('login', [LoginController::class, 'login'])->name('login');
+Route::get('documents',[\App\Http\Controllers\public\DocumentsController::class,'index'])->name('documents');
 Route::post('connexion', [LoginController::class, 'connexion'])->name('connexion');
 Route::get('deconnexion', [LoginController::class, 'deconnexion'])->name('deconnexion');
 Route::get('admin/login', [adminLogin::class, 'loginForm'])->name('AdminLogin');

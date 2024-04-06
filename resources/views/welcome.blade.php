@@ -27,7 +27,7 @@
              <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                  <div class="navbar-nav">
                      <a href="#" class="nav-item nav-link active">Home</a>
-                     <a href="#" class="nav-item nav-link">Profile</a>
+                     <a href="{{route('documents')}}" class="nav-item nav-link">documents</a>
                      <div class="nav-item dropdown">
                          <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Messages</a>
                          <div class="dropdown-menu">
