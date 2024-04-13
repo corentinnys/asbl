@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\UpdateUser;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class UsersController extends Controller
 {
@@ -46,5 +49,35 @@ class UsersController extends Controller
     public function passwordUpdate()
     {
       return view("auth.password") ;
+    }
+    public function profils(int $id)
+    {
+      $user =DB::table('Users')->where('id','=',$id)->first();
+      if (is_null($user))
+      {
+          return redirect('home');
+      }
+        if ($user->id == Auth::id() && Auth::check() == true )
+        {
+            return view('public.users.show',compact('user'));
+
+        } else
+        {
+            return redirect('home');
+        }
+    }
+    public function update(Request $request)
+    {
+       $email  = $request->get('email');
+       $street  = $request->get('street');
+       $commune  = $request->get('commune');
+       $codePostal  = $request->get('codePostal');
+       $user = DB::table("users")->where('id','=',$request->get('id'))->first();
+        Mail::to('administrateur@chezmoi.com')
+            ->send(new UpdateUser($email,$street,$commune,$codePostal,$user));
+    }
+    private function verificationMail($mail)
+    {
+        return is_null($this->getByMail($mail))?true:false;
     }
 }

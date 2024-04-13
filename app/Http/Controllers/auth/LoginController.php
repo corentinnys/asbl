@@ -8,6 +8,7 @@ use App\Http\Middleware\Authenticate;
 use App\Http\Requests\LoginRequest;
 use App\Mail\Token;
 use Carbon\Carbon;
+use Dflydev\DotAccessData\Data;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -63,7 +64,6 @@ class LoginController extends Controller
         else if (Hash::check($password, $user->password)) {
 
             $request->session()->put('mail', $mail);
-
 
                 $token =  $this->getToken();
                 $this->_usersController->setTokenIntoDb($user->id,$token);

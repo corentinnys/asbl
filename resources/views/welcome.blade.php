@@ -20,14 +20,15 @@
      <!-- Navbar -->
      <nav class="navbar navbar-expand-lg navbar-light bg-light">
          <div class="container-fluid">
-             <a href="#" class="navbar-brand">Brand</a>
+             <a href="#" class="navbar-brand">asbl</a>
              <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                  <span class="navbar-toggler-icon"></span>
              </button>
              <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                  <div class="navbar-nav">
                      <a href="#" class="nav-item nav-link active">Home</a>
-                     <a href="{{route('documents')}}" class="nav-item nav-link">documents</a>
+                     <a href="{{route('documents')}}" class="nav-item nav-link"> mes documents</a>
+                     <a href="{{route('profils',array('id'=>\Illuminate\Support\Facades\Auth::id()))}}" class="nav-item nav-link">mon profils</a>
                      <div class="nav-item dropdown">
                          <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Messages</a>
                          <div class="dropdown-menu">
@@ -43,15 +44,8 @@
              </div>
          </div>
      </nav>
-    {{auth()->user()->name}}
-        <div class="relative sm:flex sm:justify-center sm:items-center min-h-screen bg-dots-darker bg-center bg-gray-100 dark:bg-dots-lighter dark:bg-gray-900 selection:bg-red-500 selection:text-white">
 
-                    @auth
-                        <a href="{{ route("deconnexion") }}" class="font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">log out </a>
-                    @endauth
 
-        </div>
-
-        </div>
+        @yield("content")
     </body>
 </html>
