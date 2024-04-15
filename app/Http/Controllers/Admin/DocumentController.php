@@ -51,4 +51,11 @@ class DocumentController extends Controller
            "type_id"=>$typeID
        ]);
     }
+        public function logs()
+    {
+        $logs = DB::table('logs')->get()->groupBy('nameOfUser');
+        return view("admin.logs.index",compact("logs"));
+    }
+
+
 }

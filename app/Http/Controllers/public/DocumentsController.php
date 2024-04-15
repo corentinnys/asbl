@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\public;
 
 use App\Http\Controllers\Controller;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Response;
 
 class DocumentsController extends Controller
 {
@@ -97,6 +100,36 @@ class DocumentsController extends Controller
             ->get();
 
         return response()->json($docs);
+    }
+
+    public function download(string $filename)
+    {
+        $completeName = auth()->user()->name . " " . auth()->user()->lastName;
+
+        // Insérer dans la table de logs
+        $logInserted = DB::table('logs')->insert([
+            'nameOfUser' => $completeName,
+            'fichier' => $filename,
+            'date' => now()
+        ]);
+        dd($logInserted);
+
+        // Vérifier si l'insertion dans les logs a réussi
+        if ($logInserted) {
+            // Téléchargement du fichier
+            $filePath = 'storage/docs/' . $filename . '.pdf';
+
+            // Vérifier si le fichier existe sur le serveur
+            if (file_exists($filePath)) {
+                return response()->download($filePath, $filename . '.pdf');
+            } else {
+                return response()->json(['error' => 'Le fichier n\'existe pas sur le serveur'], 404);
+            }
+        } else {
+            // Erreur lors de l'insertion dans les logs
+            Log::error('Erreur lors de l\'insertion dans les logs');
+            return response()->json(['error' => 'Erreur lors de l\'insertion dans les logs'], 500);
+        }
     }
 
 }

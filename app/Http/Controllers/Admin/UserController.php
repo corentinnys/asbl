@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-use Illuminate\Testing\Fluent\Concerns\Has;
+use Illuminate\Testing\Fluent\Concerns\Has;use Maatwebsite\Excel\Facades\Excel;
 
 class UserController extends Controller
 {
@@ -87,4 +87,144 @@ class UserController extends Controller
         }
 
     }
+
+    public function gestion()
+    {
+        $users = DB::table('users')->get();
+        return view('admin.users.index',compact('users'));
+    }
+
+    public function update(Request $request)
+    {
+        $mail = $request->get('mail');
+        $commune = $request->get('commune');
+        $codePostal = $request->get('codePostal');
+        $rue = $request->get('rue');
+        $date_init = $request->get('date_init');
+        $date_elev = $request->get('date_elev');
+        $date_pass= $request->get('date_pass');
+        $id = $request->get('id');
+
+        DB::table("users")
+            ->where("id",'=', $id)
+            ->update([
+                "email"=>$mail,
+                "date_init"=>$date_init,
+                "date_elev"=>$date_elev,
+                "date_pass"=>$date_pass,
+                "Commune"=>$commune,
+                "CodePostal"=>$codePostal,
+                'Rue' => $rue
+            ]);
+    }
+
+    public function importCsv(Request $request)
+    {
+        $file = $request->file('users');
+        $destinationPath = 'uploads';
+        $file->move($destinationPath,$file->getClientOriginalName());
+        // Initialise un tableau pour stocker les données CSV
+        $rows = [];
+
+        // Ouvre le fichier CSV en mode lecture
+        $handle = fopen(public_path("uploads/users.csv"), 'r');
+
+        // Vérifie si le fichier a été ouvert avec succès
+        if ($handle !== false) {
+            // Lit la première ligne du fichier CSV pour obtenir les clés
+            $keys = fgetcsv($handle, 4096);
+
+            // Lit chaque ligne du fichier CSV
+            while (($line = fgetcsv($handle, 4096)) !== false) {
+                // Associe chaque valeur à sa clé correspondante
+                $rowData = array_combine($keys, $line);
+
+                // Ajoute les données au tableau des lignes
+                $rows[] = $rowData;
+            }
+
+            // Ferme le fichier CSV
+            fclose($handle);
+        } else {
+            // Gère les erreurs d'ouverture du fichier
+            return response()->json(['error' => 'Impossible d\'ouvrir le fichier CSV'], 500);
+        }
+        $roleID = 1;
+        // Affiche le tableau contenant toutes les lignes du fichier CSV
+        foreach ($rows as $data)
+        {
+            switch ($data["role"])
+            {
+                case "secretaire" :
+                    $roleID = 2;
+                    break;
+
+                case "president" :
+                    $roleID = 3;
+                    break;
+                case "tresorier" :
+                    $roleID = 4;
+                    break;
+                default:
+                    $roleID = 1 ;
+
+            }
+
+
+            if (!is_null($data['date_init']))
+            {
+                $degreID = 1 ;
+            }
+            else if (!is_null($data['date_pass']))
+            {
+                $degreID = 2 ;
+            }
+            else if (!is_null($data['date_elev']))
+            {
+                $degreID = 3 ;
+            }
+
+            if($data['date_pass']== "NULL")
+            {
+                $dateDegre = null;
+            }else
+            {
+                $dateDegre = $data['date_pass'];
+            }
+            if($data['date_elev']== "NULL")
+            {
+                $dateDegre = null;
+            }else{
+                $dateDegre = $data['date_elev'];
+            }
+            DB::table('users')->insert(
+                [
+                    "lastName"=>$data["lastName"],
+                    "name"=>$data["name"],
+                    "email"=>$data["email"],
+                    "password"=> Hash::make($data["password"]),
+                    "Commune"=>$data["Commune"],
+                    "CodePostal"=>$data["codePostal"],
+                    "Rue"=>$data["Rue"],
+                    "roleID"=>$roleID,
+                    "date_init"=>$data['date_init'],
+
+                    "date_pass"=>$dateDegre,
+                    "date_elev"=>$dateDegre,
+                    "degreeID"=>$degreID
+                ]
+            );
+
+        }
+        return redirect()->back();
+    }
+    public function formCsv()
+    {
+        return view('admin.users.importFile');
+    }
+
+
+
+
 }
+

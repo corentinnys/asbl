@@ -329,6 +329,7 @@
         display: inline;
         font-weight: 600;
     }
+
 </style>
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
 
@@ -410,6 +411,13 @@
                                                 </span>
                                             </td>
                                             <td class="text-right"> <a href="{{$doc->link}}"> <img src="{{asset("pictures/eye.jpg")}}" alt=""> </a></td>
+                                           @if($doc->telechargeable == 0)
+                                            <td class="text-right">
+                                                <a href="{{ route('download', ['filename' => $doc->name]) }}">
+                                                    <img src="{{ asset("pictures/download.png") }}" alt="">
+                                                </a>
+                                            </td>
+                                            @endif
                                         </tr>
                                     @endforeach
                                     </tbody>

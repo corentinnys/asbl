@@ -1,0 +1,3 @@
+lastName,name,email,password,degreeID,Commune,codePostal,Rue,role,date_init,date_pass,date_elev
+Jean,imbert,j.imbert@gmail.com,killer23,2,Liege,4020,place du congres,president,16/04/24,NULL,NULL
+Steph,lambert,Steph.lambert@gmail.com,killer23,1,liege,4020,Rue outremeuse,secretaire,17/04/24,NULL,NULL

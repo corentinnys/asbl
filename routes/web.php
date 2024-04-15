@@ -13,7 +13,10 @@ use App\Http\Controllers\Admin\LoginController as adminLogin;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-
+Route::get('download/{filename}', [App\Http\Controllers\public\DocumentsController::class, 'download'])->name('download')->middleware(\App\Http\Middleware\verifIsConnect::class);
+Route::get('admin/logs', [App\Http\Controllers\Admin\DocumentController::class, 'logs'])->name('logs')->middleware(\App\Http\Middleware\verifIsConnect::class);
+Route::post("import/csv",[App\Http\Controllers\Admin\UserController::class,'importCsv'])->name("importFile");
+Route::get("import/csv",[App\Http\Controllers\Admin\UserController::class,'formCsv']);
 Route::get('/home', function () {
     return view('welcome');
 })->name("home")->middleware('App\Http\Middleware\verifIsConnect');
@@ -32,6 +35,7 @@ Route::get('admin/modify/password', [App\Http\Controllers\Admin\UserController::
 Route::post('admin/modify/password', [App\Http\Controllers\Admin\UserController::class, 'updatePassword'])->name('passwordUpdated');
 Route::post('admin/create/document', [App\Http\Controllers\Admin\DocumentController::class, 'create'])->name('createDocument');
 Route::get('admin/create/document', [App\Http\Controllers\Admin\DocumentController::class, 'documentForm'])->name('createForm');
+Route::get('admin/gestion/users', [App\Http\Controllers\Admin\UserController::class, 'gestion'])->name('gestionUser');
 Route::get('profils/show/{id}', [App\Http\Controllers\UsersController::class, 'profils'])->name('profils');
 Route::post('profils/update', [App\Http\Controllers\UsersController::class, 'update'])->name('userUpdate');
 Route::get('search', [App\Http\Controllers\public\DocumentsController::class, 'search'])->name('searchDoc');
@@ -40,3 +44,4 @@ Route::get('search/category', [App\Http\Controllers\public\DocumentsController::
 Route::get('tri', [App\Http\Controllers\public\DocumentsController::class, 'tri'])->name('triFolder')->middleware(\App\Http\Middleware\verifIsConnect::class);
 
 
+Route::post('user/update', [App\Http\Controllers\Admin\UserController::class, 'update'])->name('updateUsers');
