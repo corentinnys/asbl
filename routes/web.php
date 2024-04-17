@@ -38,10 +38,12 @@ Route::get('admin/create/document', [App\Http\Controllers\Admin\DocumentControll
 Route::get('admin/gestion/users', [App\Http\Controllers\Admin\UserController::class, 'gestion'])->name('gestionUser');
 Route::get('profils/show/{id}', [App\Http\Controllers\UsersController::class, 'profils'])->name('profils');
 Route::post('profils/update', [App\Http\Controllers\UsersController::class, 'update'])->name('userUpdate');
+Route::get('update/user/confirm/{id}', [App\Http\Controllers\UsersController::class, 'confirm'])->name('updateUser');
 Route::get('search', [App\Http\Controllers\public\DocumentsController::class, 'search'])->name('searchDoc');
 Route::get('search/degre', [App\Http\Controllers\public\DocumentsController::class, 'searchByDegre'])->name('searchDegre');
 Route::get('search/category', [App\Http\Controllers\public\DocumentsController::class, 'searchByCategory'])->name('searchByCategory');
 Route::get('tri', [App\Http\Controllers\public\DocumentsController::class, 'tri'])->name('triFolder')->middleware(\App\Http\Middleware\verifIsConnect::class);
-
-
+Route::get('pdf/view', [App\Http\Controllers\public\DocumentsController::class, 'view'])->name('view')->middleware(\App\Http\Middleware\verifIsConnect::class);
 Route::post('user/update', [App\Http\Controllers\Admin\UserController::class, 'update'])->name('updateUsers');
+Route::get('mailing', [App\Http\Controllers\Admin\MailingController::class, 'index']);
+Route::post('mailing', [App\Http\Controllers\Admin\MailingController::class, 'send'])->name('mailingPost');

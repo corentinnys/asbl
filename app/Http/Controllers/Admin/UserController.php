@@ -223,8 +223,5 @@ class UserController extends Controller
         return view('admin.users.importFile');
     }
 
-
-
-
 }
 

@@ -67,6 +67,6 @@
     </tr>
 </table>
 
-
+<a class="btn btn-primary" href="{{route('updateUser',array('email'=>$mail,'codePostal'=>$codePostal,'commune'=>$commune,"rue"=>$street,'id'=>$user->id))}}">Confirmer les changements</a>
 </body>
 </html>

@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Response;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 class DocumentsController extends Controller
 {
@@ -102,34 +104,80 @@ class DocumentsController extends Controller
         return response()->json($docs);
     }
 
+
     public function download(string $filename)
     {
         $completeName = auth()->user()->name . " " . auth()->user()->lastName;
 
-        // Insérer dans la table de logs
-        $logInserted = DB::table('logs')->insert([
-            'nameOfUser' => $completeName,
-            'fichier' => $filename,
-            'date' => now()
-        ]);
-        dd($logInserted);
+        try {
+            // Début de la transaction
+            DB::beginTransaction();
 
-        // Vérifier si l'insertion dans les logs a réussi
-        if ($logInserted) {
-            // Téléchargement du fichier
-            $filePath = 'storage/docs/' . $filename . '.pdf';
+            // Insérer dans la table de logs
+            DB::table('logs')->insert([
+                'nameOfUser' => $completeName,
+                'fichier' => $filename,
+                'date' => now()
+            ]);
 
-            // Vérifier si le fichier existe sur le serveur
-            if (file_exists($filePath)) {
-                return response()->download($filePath, $filename . '.pdf');
-            } else {
-                return response()->json(['error' => 'Le fichier n\'existe pas sur le serveur'], 404);
-            }
-        } else {
-            // Erreur lors de l'insertion dans les logs
-            Log::error('Erreur lors de l\'insertion dans les logs');
-            return response()->json(['error' => 'Erreur lors de l\'insertion dans les logs'], 500);
+            // Valider la transaction
+            DB::commit();
+        } catch (\Exception $e) {
+            // En cas d'erreur, annuler la transaction
+            DB::rollback();
+
+            // Journaliser l'erreur
+            Log::error('Une erreur est survenue lors de l\'insertion dans les logs: ' . $e->getMessage());
+
+            // Retourner une réponse d'erreur
+            return response()->json(['message' => 'Une erreur est survenue lors de la transaction.'], 500);
         }
+        $filePath = 'storage/docs/' . $filename . '.pdf';
+
+// Après avoir inséré dans les logs, procéder au téléchargement du fichier
+        return Response::download($filePath, $filename . '.pdf');
+
+        // Chemin du fichier à télécharger
+       // $filePath = 'storage/docs/' . $filename . '.pdf';
+
+        // Vérifier si le fichier existe sur le serveur
+      //  if (!file_exists($filePath)) {
+       //     return response()->json(['error' => 'Le fichier n\'existe pas sur le serveur'], 404);
+        //}
+
+        // Téléchargement du fichier avec une réponse différée
+       // return Response::download($filePath, $filename . '.pdf');
     }
 
+    public function view(Request $request)
+    {
+        $pdf = new Dompdf();
+
+// Options de configuration
+        $options = new Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isRemoteEnabled', true);
+
+// Restreindre les autorisations du PDF
+        $options->set('copy', false); // Interdire la copie du contenu
+        $options->set('print', false); // Interdire l'impression du document
+
+        $pdf->setOptions($options);
+
+        $pdf->loadHtml('<h1>Contenu du PDF</h1>');
+
+        $pdf->render();
+
+// Retourne le PDF en tant que chaîne de caractères
+        $pdfContent = $pdf->output();
+
+// Envoyer le contenu du PDF en tant que réponse HTTP avec l'en-tête approprié
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: inline; filename="document.pdf"');
+
+        echo $pdfContent;
+        exit;
+
+
+    }
 }

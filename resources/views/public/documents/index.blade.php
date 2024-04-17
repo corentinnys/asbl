@@ -410,13 +410,24 @@
                                                     @endfor
                                                 </span>
                                             </td>
-                                            <td class="text-right"> <a href="{{$doc->link}}"> <img src="{{asset("pictures/eye.jpg")}}" alt=""> </a></td>
-                                           @if($doc->telechargeable == 0)
                                             <td class="text-right">
-                                                <a href="{{ route('download', ['filename' => $doc->name]) }}">
-                                                    <img src="{{ asset("pictures/download.png") }}" alt="">
+                                               {{-- <a href="{{$doc->link}}" >
+                                                    <img src="{{asset("pictures/eye.jpg")}}" alt="">
+                                                </a>--}}
+
+
+                                                <a href="{{route('view',array('link'=>$doc->link))}}">
+                                                    <img src="{{asset("pictures/eye.jpg")}}" alt="">
                                                 </a>
                                             </td>
+                                            @if($doc->telechargeable == 0)
+                                                <td class="text-right">
+                                                    <a href="{{route('download',array('filename'=>$doc->name))}}">
+                                                    <!-- Ne pas inclure de lien de téléchargement si le fichier n'est pas téléchargeable -->
+                                                    <!-- L'image d'icône de téléchargement doit être rendue, mais sans lien -->
+                                                    <img src="{{ asset("pictures/download.png") }}" alt="">
+                                                    </a>
+                                                </td>
                                             @endif
                                         </tr>
                                     @endforeach
@@ -509,9 +520,10 @@
 
                 },
                 error:function ($code){
-                    console.log($code)
+                   console($code)
                 }
             })
         });
     </script>
+
 @endsection

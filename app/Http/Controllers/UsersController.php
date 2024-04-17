@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Session;
 
 class UsersController extends Controller
 {
@@ -68,16 +69,37 @@ class UsersController extends Controller
     }
     public function update(Request $request)
     {
-       $email  = $request->get('email');
-       $street  = $request->get('street');
-       $commune  = $request->get('commune');
-       $codePostal  = $request->get('codePostal');
-       $user = DB::table("users")->where('id','=',$request->get('id'))->first();
-        Mail::to('administrateur@chezmoi.com')
-            ->send(new UpdateUser($email,$street,$commune,$codePostal,$user));
+        $email = $request->get('email');
+        $street = $request->get('street');
+        $commune = $request->get('commune');
+        $codePostal = $request->get('codePostal');
+
+
+
+        $user = DB::table("users")->where('id', '=', $request->get('id'))->first();
+        Mail::to('administrateur@chezmoi.com')->send(new UpdateUser($email, $street, $commune, $codePostal, $user));
     }
     private function verificationMail($mail)
     {
         return is_null($this->getByMail($mail))?true:false;
+    }
+
+    public function confirm(Request $request,int $id)
+    {
+        // Obtenir les valeurs de session
+        $email = $request->get('email');
+
+        $codePostal = $request->get('codePostal');
+        $commune = $request->get('commune');
+        $street = $request->get('rue');
+
+        // Mise à jour des données utilisateur dans la base de données
+        DB::table("users")->where('id', '=', $id)->update([
+            'email' => $email,
+            'Rue' => $street,
+            'CodePostal' => $codePostal,
+            'Commune' => $commune
+        ]);
+        return view('admin.users.confirmupdate');
     }
 }
