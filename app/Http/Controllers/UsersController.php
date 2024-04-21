@@ -42,7 +42,7 @@ class UsersController extends Controller
         return User::where('email',$mail)->first();
     }
 
-    public function getByMailAndRole($mail)
+    public function  getByMailAndRole($mail)
     {
         return User::where('email',$mail)
             ->whereIn('roleID',[2,3,4])->first();

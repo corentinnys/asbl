@@ -104,6 +104,68 @@ class DocumentsController extends Controller
         return response()->json($docs);
     }
 
+    public function searchByFilter(Request $request)
+    {
+        //$values = $request->get('values');
+        //$values = $request->all();
+
+        $docs = DB::table("documents");
+
+       /* foreach ($values as $value)
+        {
+           // dd($value['value']);
+           // $value['name'] == "category";
+            if( $value['name'] == "category" )
+            {
+
+                // Ajouter la condition pour la catégorie
+                //$docs->whereIn('type_id', [$value['value']]);
+                $docs->whereIn('type_id', [$value['value']]);
+                //$docs->whereIn('type_id', [$value['value']]);
+            }
+          /*  else if ($value['name'] == "type") // Utiliser else if pour d'autres conditions
+            {
+                // Ajouter la condition pour le type
+                $docs->whereIn('type_id', [$value['value']]);
+            }*/
+       // }*/
+
+        // Exécuter la requête et obtenir les résultats
+        //$result = $docs->get();
+
+        $values = $request->get('values');
+
+        $docs = DB::table("documents");
+
+        $categoryValues = []; // Initialisez un tableau vide pour les valeurs de catégorie
+        $degreeValues = []; // Initialisez un tableau vide pour les valeurs de catégorie
+
+        foreach ($values as $key => $value) {
+            if ($value['name'] == "category") {
+                // Ajoutez la valeur de la catégorie à $categoryValues
+                $categoryValues[] = $value['value'];
+            }
+           elseif  ($value['name'] == "degree") {
+                // Ajoutez la valeur de la catégorie à $categoryValues
+                $degreeValues[] = $value['value'];
+            }
+
+        }
+
+// Vérifiez si des valeurs de catégorie ont été récupérées
+        if (!empty($categoryValues)) {
+            // Utilisez whereIn avec les valeurs de catégorie pour la condition
+            $docs->whereIn('type_id', $categoryValues);
+        }
+        if (!empty($degreeValues)) {
+            // Utilisez whereIn avec les valeurs de catégorie pour la condition
+            $docs->whereIn('degree_id', $degreeValues);
+        }
+
+        $result = $docs->get();
+        return response()->json($result);
+
+    }
 
     public function download(string $filename)
     {

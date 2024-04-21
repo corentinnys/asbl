@@ -348,10 +348,10 @@
                             <!-- BEGIN FILTER BY CATEGORY -->
                             <h4>Categorie:</h4>
                             <div class="checkbox">
-                                <label><input type="checkbox" class="icheck category" name="category" value="1"> Procedure</label>
+                                <label><input type="checkbox" class="icheck category" name="category" value="2"> Procedure</label>
                             </div>
                             <div class="checkbox">
-                                <label><input type="checkbox" class="icheck category" name="category" value="2"> Rapport </label>
+                                <label><input type="checkbox" class="icheck category" name="category" value="1"> Rapport </label>
                             </div>
                             <div class="checkbox">
                                 <label><input type="checkbox" class="icheck category" name="category" value="3"> Bibliotheque</label>
@@ -449,7 +449,7 @@
     <script>
         // checkedValues contient maintenant les valeurs de toutes les cases cochées
 
-       $('.degre').change((e)=>{
+       /*$('.degre').change((e)=>{
            var checkedValues = [];
            $('.degre:checked').each(function() {
                // Ajoutez la valeur de chaque case cochée au tableau
@@ -485,9 +485,9 @@
                    console.log($code)
                }
            })
-       });
+       });*/
 
-        $('.category').change((e)=>{
+    /*    $('.category').change((e)=>{
             var categoryValues = [];
             $('.category:checked').each(function() {
                 // Ajoutez la valeur de chaque case cochée au tableau
@@ -523,7 +523,50 @@
                    console($code)
                 }
             })
+        });*/
+
+
+
+        $('.icheck').change(() => {
+            var checkedValues = [];
+
+            // Parcourir toutes les cases cochées
+            $('.icheck:checked').each(function() {
+                // Obtenir le nom et la valeur de la case cochée
+                var name = $(this).attr('name');
+                var value = $(this).val();
+
+                // Ajouter les données à un objet
+                checkedValues.push({ name: name, value: value });
+            });
+
+            // Effectuer la requête AJAX seulement si des cases sont cochées
+            if (checkedValues.length > 0) {
+                $.ajax({
+                    url: "{{ route('searchByFilter') }}",
+                    data: { "values": checkedValues },
+                    success: function(responsePHP) {
+                        console.log(responsePHP);
+                        $('tbody tr').remove();
+                        responsePHP.forEach((element) => {
+                            let stars = '';
+                            for (let i = 0; i < element.degree_id; i++) {
+                                stars += "<span><i class='fa fa-star'></i></span>";
+                            }
+                            $('tbody').append(
+                                "<tr>" +
+                                "<td class='image'><img src='https://www.bootdey.com/image/400x300/FF8C00' alt=''></td>" +
+                                "<td class='product'>" + element.name + "</td>" +
+                                "<td class='rate text-right'>" + stars + "</td>" +
+                                "<td class='text-right'> <a href='" + element.link + "'> <img src='{{asset('pictures/eye.jpg')}}' alt=''> </a></td>" +
+                                "</tr>"
+                            );
+                        });
+                    }
+                });
+            }
         });
+
     </script>
 
 @endsection

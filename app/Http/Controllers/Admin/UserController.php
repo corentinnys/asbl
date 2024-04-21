@@ -197,8 +197,30 @@ class UserController extends Controller
             }else{
                 $dateDegre = $data['date_elev'];
             }
-            DB::table('users')->insert(
-                [
+
+           $existUser= DB::table('users')->where('email','=',$data["email"])->first();
+            if (is_null($existUser))
+            {
+                DB::table('users')->insert(
+                    [
+                        "lastName"=>$data["lastName"],
+                        "name"=>$data["name"],
+                        "email"=>$data["email"],
+                        "password"=> Hash::make($data["password"]),
+                        "Commune"=>$data["Commune"],
+                        "CodePostal"=>$data["codePostal"],
+                        "Rue"=>$data["Rue"],
+                        "roleID"=>$roleID,
+                        "date_init"=>$data['date_init'],
+
+                        "date_pass"=>$dateDegre,
+                        "date_elev"=>$dateDegre,
+                        "degreeID"=>$degreID
+                    ]
+                );
+            }else
+            {
+                DB::table('users')->where('email','=',$data["email"])->update( [
                     "lastName"=>$data["lastName"],
                     "name"=>$data["name"],
                     "email"=>$data["email"],
@@ -212,8 +234,9 @@ class UserController extends Controller
                     "date_pass"=>$dateDegre,
                     "date_elev"=>$dateDegre,
                     "degreeID"=>$degreID
-                ]
-            );
+                ]);
+            }
+
 
         }
         return redirect()->back();
@@ -221,6 +244,41 @@ class UserController extends Controller
     public function formCsv()
     {
         return view('admin.users.importFile');
+    }
+
+
+    public function insert(Request $request)
+    {
+        $password =$this->getToken() ;
+        DB::table('users')->insert([
+           "lastName" =>$request->get('lastName'),
+           "name" =>$request->get('name'),
+           "email" =>$request->get('email'),
+            "date_init"=> $request->get('date_init'),
+            "date_pass"=> $request->get('date_pass'),
+            "date_elev"=> $request->get('date_elev'),
+            "Commune"=> $request->get('Commune'),
+            "CodePostal"=> $request->get('codePostal'),
+            "Rue"=> $request->get('rue'),
+            "password"=>Hash::make($password)
+        ]);
+    }
+
+    public function getToken()
+    {
+        $characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+{}|[];\',./?><';
+        $token = '';
+        $length = strlen($characters);
+        for ($i = 0; $i < 20; $i++) {
+            $token .= $characters[random_int(0, $length - 1)];
+        }
+        return $token;
+    }
+
+
+    public function delete(int $userID)
+    {
+        DB::table('users')->where('id','=',$userID)->delete();
     }
 
 }
