@@ -12,4 +12,8 @@ Route::prefix('admin')->group(function () {
     Route::get('/login', [adminLogin::class, 'loginForm'])->name('AdminLogin');
     Route::post('/login', [adminLogin::class, 'login'])->name('AdminLogin');
     Route::post('/connexion', [adminLogin::class, 'connexion'])->name('AdminConnexion');
+    Route::get('/gestion/permissions',[App\Http\Controllers\Admin\UserController::class, 'roleForm']);
+    Route::post('/gestion/permissions/create',[App\Http\Controllers\Admin\PermissionsController::class, 'create'])->name('createPermission');
+    Route::get('/gestion/permissions/delete',[App\Http\Controllers\Admin\PermissionsController::class, 'delete'])->name('deletePermission');
+    Route::post('/gestion/permissions/update',[App\Http\Controllers\Admin\PermissionsController::class, 'update'])->name('updatePermission');
 });

@@ -159,7 +159,7 @@ class UserController extends Controller
                     $roleID = 2;
                     break;
 
-                case "president" :
+                case "admin" :
                     $roleID = 3;
                     break;
                 case "tresorier" :
@@ -198,15 +198,23 @@ class UserController extends Controller
                 $dateDegre = $data['date_elev'];
             }
 
-           $existUser= DB::table('users')->where('email','=',$data["email"])->first();
+           $existUser= DB::table('users')
+               ->where('name','=',$data["name"])
+               ->where('lastName','=',$data["lastName"])
+               ->first();
+           $password = $this->createPassword(10);
+            Mail::to('administrateur@chezmoi.com')
+                ->send(new password($password));
+
             if (is_null($existUser))
             {
+
                 DB::table('users')->insert(
                     [
                         "lastName"=>$data["lastName"],
                         "name"=>$data["name"],
                         "email"=>$data["email"],
-                        "password"=> Hash::make($data["password"]),
+                        "password"=> Hash::make($password),
                         "Commune"=>$data["Commune"],
                         "CodePostal"=>$data["codePostal"],
                         "Rue"=>$data["Rue"],
@@ -224,7 +232,7 @@ class UserController extends Controller
                     "lastName"=>$data["lastName"],
                     "name"=>$data["name"],
                     "email"=>$data["email"],
-                    "password"=> Hash::make($data["password"]),
+                    "password"=> Hash::make($password),
                     "Commune"=>$data["Commune"],
                     "CodePostal"=>$data["codePostal"],
                     "Rue"=>$data["Rue"],
@@ -279,6 +287,12 @@ class UserController extends Controller
     public function delete(int $userID)
     {
         DB::table('users')->where('id','=',$userID)->delete();
+    }
+
+    public function roleForm()
+    {
+       $permissions = DB::table('permissions')->get();
+        return view('admin.permissions',compact('permissions'));
     }
 
 }

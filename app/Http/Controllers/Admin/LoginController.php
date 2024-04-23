@@ -91,7 +91,7 @@ class LoginController extends Controller
         if (!is_null($user) && Carbon::now()->lessThanOrEqualTo($user->end_twoo_factor_code))
         {
             Auth::login($user);
-            return view("admin.welcome");
+            return view("admin.index");
         }else if (is_null($user)){
             $error = "numero invalide";
             return view("auth.token",compact("error"));
