@@ -27,4 +27,9 @@ class PermissionsController extends Controller
     {
         DB::table('permissions')->where('id','=',$request->get('id'))->delete();
     }
+
+    public function getPermission()
+    {
+        return DB::table('permissions')->get();
+    }
 }

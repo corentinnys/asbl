@@ -301,7 +301,7 @@
                             </a>
                         </li>
                         <li class="menu-item">
-                            <a href="app-access-permission.html" class="menu-link">
+                            <a href="{{route('permission')}}l" class="menu-link">
                                 <div class="text-truncate" data-i18n="Permission">Permission</div>
                             </a>
                         </li>
