@@ -42,7 +42,14 @@ class RolesController extends Controller
 
 
         }
+public function getPermission(Request $request)
+{
+    $role = $request->get('role');
+    $roleID = DB::table('roles')->where('name',$role)->first()->id;
+    $permissions = DB::table('roles_has_permission')->where('roleID',$roleID)->get();
 
+    return response()->json($permissions);
+}
 
 
 

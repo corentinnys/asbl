@@ -19,4 +19,5 @@ Route::prefix('admin')->group(function () {
 
     Route::get('/gestion/roles',[App\Http\Controllers\Admin\RolesController::class, 'roles'])->name('roles');
     Route::post('/gestion/roles/update',[App\Http\Controllers\Admin\RolesController::class, 'update'])->name('roleUpdate');
+    Route::get ('/gestion/roles/permission',[App\Http\Controllers\Admin\RolesController::class, 'getPermission'])->name('getPermissions');
 });

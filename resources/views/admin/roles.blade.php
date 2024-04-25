@@ -97,13 +97,13 @@
                                               <td>
                                                   <div class="d-flex">
                                                       <div class="form-check me-3 me-lg-5">
-                                                          <input class="form-check-input" name="choix[{{$permission->id}}]" type="radio" value="true" id="userManagementRead{{$permission->id}}">
+                                                          <input class="form-check-input checketrue" name="choix[{{$permission->id}}]" type="radio" value="true" id="userManagementRead{{$permission->id}}">
                                                           <label class="form-check-label" for="userManagementRead{{$permission->id}}">
                                                               oui
                                                           </label>
                                                       </div>
                                                       <div class="form-check me-3 me-lg-5">
-                                                          <input class="form-check-input" name="choix[{{$permission->id}}]" type="radio" value="false" id="userManagementWrite{{$permission->id}}">
+                                                          <input class="form-check-input checkefalse" name="choix[{{$permission->id}}]" type="radio" value="false" id="userManagementWrite{{$permission->id}}">
                                                           <label class="form-check-label" for="userManagementWrite{{$permission->id}}">
                                                               non
                                                           </label>
@@ -140,7 +140,39 @@
             $('.role-edit-modal').click(function() {
                 // Trouver l'élément h4 associé
                 roleName = $(this).closest('.card-body').find('.role-heading h4').text().trim();
+                $.ajax({
+                    url:"{{route("getPermissions")}}",
+                    data:{
+                        role:roleName
+                    },
+                    success:function (responsePHP) {
 
+                        $('.form-check-input').each(function () {
+                            // Obtient le nom de la permission associée à cette case à cocher
+                            let permissionName = $(this).attr('name').replace('choix[', '').replace(']', '');
+
+                            // Vérifie si le nom de la permission correspond à l'une des permissions dans la réponse AJAX
+                            let isChecked = false;
+                            responsePHP.forEach(permission => {
+                                // Compare les noms de permission
+                                if (permission.permissionID == permissionName) {
+                                    isChecked = true;
+                                }
+                            });
+
+                            // Coche la case "oui" si la permission est présente, sinon coche la case "non"
+
+                            if (isChecked) {
+                                $(this).closest('.d-flex').find('.form-check-input[value="true"]').prop('checked', true); // Coche la case "oui"
+                            } else {
+
+                                $(this).closest('.d-flex').find('.form-check-input[value="true"]').prop('checked', false); // Décoche la case "oui"
+                                $(this).closest('.d-flex').find('.form-check-input[value="false"]').prop('checked', true); // Coche la case "non"
+                            }
+                        });
+
+                    }
+                })
             });
 
             $('button[type=submit]').click((e) => {
